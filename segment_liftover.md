@@ -9,4 +9,32 @@
         - Highly accurate but time-consuming and computationally demanding
     2. Convert the coordinates using a 'mapping file' (read: chain file)
         - Generally accurate and fast. Some information is likely to be lost.
+- Three genome build conversion tools are widely used: liftOver (UCSC), CrossMap (Zhao), Remap (NCBI).
+
+1. UCSC liftOver
+    - Web service and command line
+    - Comprehensive selection of assemblies, within and between organisms.
+2. CrossMap
+    - Command line
+    - Accepts a wider selection of file types (B/SAM, BigWig, VCF, BED-like, etc...)
+    - Results are comparable to liftOver
+    - Uses UCSC chain files
+3. Remap
+    - More limited selection of organisms
+    - Conversion based on a different methodology to liftOver and CrossMap
+    - 250k row limit
+    - Web service and Perl API
+
+- All these tools produce nearly identical results
+- Challenges in conversion arise mainly from segments, where the region in the source build does not map to a *continuous* region in the target build. 
+- liftOver and CrossMap split the segments into smaller segments and map them to different locations.
+- Remap is *integrity-preserving* and preserves the entire segment, mapping the span to the target build.
+- Preserving integrity of segments is particularly important for remapping CNVs
+    - and also for our use-case, converting intervals in exome bed files
+- segment_liftover performs integrity-preseving genomic conversion between genome builds.
+- It has two major functional additions to other tools:
+    1. Re-conversion by locus approximation when precise conversion of a coordinate failes
+    2. Ability to handle any number of files and integration into data processing pipelines, including automatic file traversal, interruption resumption, detailed logging.
+
+### Methods
 
