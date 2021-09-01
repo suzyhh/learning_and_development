@@ -42,4 +42,22 @@
 - UCSC liftOver tool and chain file are used for conversion, followed by approximate conversion on coordinates that failed to convert
 - Segment conversion also undergoes additional QC steps to ensure accurate remapping
     - Remapped segment must be on the same chromosome
-    - The ratio of the lengths of the original and the remapped segments must be between a range controlled by defined variable 'beta' (default = 2), where 1/beta < ratio < $\beta$
+    - The ratio of the lengths of the original and the remapped segments must be between a range controlled by defined variable 'beta' (default = 2), where 1/beta < ratio < beta
+- Approximate conversion will try to find a convertible position in adjacent regions to the un-convertable position. Range and resolution of the search is defined by the *range* and *step_size* parameters.
+- Runs in Python. Requires click and pandas (N.B. tested with click==7.1.2 and pandas==1.1.3 as most recent versions of these modules cause segment_liftover to error)
+
+### Use cases
+#### Convert arrayMap data from hg19 to hg38
+
+- Converted 44,632 probe file and 44,471 segment files.
+- 42 mins to convert 5.5 billion probe positions, 30 mins to convert 4.8 million segments
+- Directly converted >99.99% of probes and >99% of segments
+    - More unmapped segments as these are more complex and require QC checks
+    - Unconverted regions mainy around telomeres, centromeres, and other gene_sparse locations (retrieved from biomaRt using HGNC symbol or ENSEMBL gene ID)
+    - From 4.8 million segments, 14,707 were approxiamtely converted, 41,201 were converted but subseqently rejected, and 1,046 were unconvertible.
+
+#### Different conversion strategies
+
+- Using approximate conversion rescues 1 additional segment per file 
+
+[segment_liftover](https://github.com/baudisgroup/segment-liftover)
