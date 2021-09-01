@@ -42,4 +42,4 @@
 - UCSC liftOver tool and chain file are used for conversion, followed by approximate conversion on coordinates that failed to convert
 - Segment conversion also undergoes additional QC steps to ensure accurate remapping
     - Remapped segment must be on the same chromosome
-    - The ratio of the lengths of the original and the remapped segments must be between a range controlled by defined variable 'beta' (default = 2), where 1/beta < ratio < \beta
+    - The ratio of the lengths of the original and the remapped segments must be between a range controlled by defined variable 'beta' (default = 2), where 1/beta < ratio < $\beta$
