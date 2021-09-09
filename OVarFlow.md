@@ -28,3 +28,36 @@
 ### Results
 - Validated the workflow by the detection of a variant responsile for autosomal recessive dwarfism in the chicken genome, using WGS data from a single affected and 261 non-affected chicken samples.
     - This was a repeat of an original study (Wu *et al*.) in which 11 potential candidate variants were identified (with 1 classified as high impact).
+- OVarFlow detected 6 potetial candidate variants (not the same as the 11 candidates detected previously).
+- The causative variant identified by Wu *et al*. was among the 6 candidates
+
+#### Optimisation of individual GATK tools
+- One problem with JVM is tat its resource utilisation doesn't always scale positivesly with the size of hardware resources
+- Heap size and number of garbage collection threads are automatically adjusted to the available hardware.
+    - Heap size maxes out at ~25Gb (25% of available memory?)
+    - Number of GC threads gorws continuously with the number of given CPU cores.
+    - These amounts are usually larger than what is needed by an application to run efficiently
+
+##### Impact of GC thread count
+- SortSam, MarkDuplicates, HaplotypeCaller, and GatherVcfs
+- Walltime of SortSam, HalotypeCaller, GatherVcfs was not influenced by the number of GC threads
+- MarkDuplicates had longer runtime with higher thread counts. 2 threads was optimal.
+- Total CPU usage for SortSam, MarkDuplicates increases with GC thread numbers
+- Differenced in memory consumption were not as pronounced as with CPU usage.
+
+##### Impact of JVM heap size
+- On the same tools
+- SortSam benefits from larger heap sizes (12 is optimal).
+- Memory footprint is severely affected by the max. allowed heap size for SortSam, MarkDuplcates, and HaplotypeCaller.
+- The data for all tools except SortSam were messy and no statistical result could be found
+
+#### Optimisation on the workflow level
+- Monitored CPU and memory usage running 6 chicken whole genome fastq files through the workflow.
+- Optimising the GC threads reduced initial spikes in memory and CPU usage.
+- Optimising heap size also drastically reduced memory utlisation.
+- Prior to these optimisations, memory usage maxed at 230-240Gb, and withouth platued at 50Gb.
+- Found that running HaplotypeCaller with a single pairHMM thread was preferable to keep each process restricted to a single core, allowing higher parallelisation. This reduced runtime by 5 hours.
+
+### Discussion
+- Optimising JVM resources to suit specific hardware architecture is needed for efficient running of GATK workflows.
+- Increasing resource sometimes has no effect on walltime but substantial effect on system time, which reduces parallelisation and therefore increases processing time
